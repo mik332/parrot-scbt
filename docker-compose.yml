@@ -1,0 +1,32 @@
+version: '3.9'
+services:
+
+  parrot_app:
+    image: registry.vmv.group/s-repo/parrot:v0.1.7
+    container_name: parrot_app
+    env_file:
+      - ./.env
+    ports:
+      - '8080:80'
+    expose:
+      - '8080'
+    networks:
+      - parrot_net
+
+  parrot_db:
+    container_name: parrot_db
+    image: postgres:14.6-alpine3.17
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_BASE}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_USER: ${DB_USER}
+    ports:
+      - '15432:5432'
+    expose:
+      - '15432'
+    networks:
+      - parrot_net
+
+networks:
+  parrot_net: {}

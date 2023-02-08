@@ -1,0 +1,28 @@
+image: docker:20.10.13
+
+services:
+  - docker:20.10.13-dind
+
+stages:
+  # - init
+  # - test
+  - build
+  # - deploy
+
+variables:
+  IMAGE_NAME: parrot
+  REGISRTY: registry.vmv.group/s-repo/
+  REPOSITORY_PATH: registry.vmv.group
+  MAJOR: 0
+  MINOR: 1
+
+build_job:
+  stage: build
+  only:
+    - main
+  script:
+    - echo "$PASSWORD" | docker login -u "$USER" --password-stdin "$URL"
+    - docker build -t ${REGISRTY}${IMAGE_NAME}:latest ./app
+    - docker tag ${REGISRTY}${IMAGE_NAME}:latest ${REGISRTY}${IMAGE_NAME}:v${MAJOR}.${MINOR}.${CI_PIPELINE_IID}
+    - docker push ${REGISRTY}${IMAGE_NAME}:latest
+    - docker push ${REGISRTY}${IMAGE_NAME}:v${MAJOR}.${MINOR}.${CI_PIPELINE_IID}
